@@ -23,37 +23,33 @@ parser.settings = COLOR_NAME_SETTINGS
 local CUSTOM_ENABLED = false
 
 function parser.init(opts)
-  if opts == nil then opts = CUSTOM_ENABLED end
+  if opts == nil then
+    opts = CUSTOM_ENABLED
+  end
   COLOR_MAP = {}
   COLOR_TRIE = Trie()
   COLOR_NAME_MINLEN, COLOR_NAME_MAXLEN = 1e10, 0
 
+  local function addPair(k, v)
+    COLOR_NAME_MINLEN, COLOR_NAME_MAXLEN = min(#k, COLOR_NAME_MINLEN), max(#k, COLOR_NAME_MAXLEN)
+    COLOR_MAP[k] = v
+    COLOR_TRIE:insert(k)
+    if COLOR_NAME_SETTINGS.lowercase then
+      local lowercase = k:lower()
+      COLOR_MAP[lowercase] = v
+      COLOR_TRIE:insert(lowercase)
+    end
+  end
+
   if type(opts) == "table" or type(opts) == "function" then
+    local hash = string.byte "#"
     for k, v in pairs(type(opts) == "function" and opts() or opts) do
-      COLOR_NAME_MINLEN = COLOR_NAME_MINLEN and min(#k, COLOR_NAME_MINLEN) or #k
-      COLOR_NAME_MAXLEN = COLOR_NAME_MAXLEN and max(#k, COLOR_NAME_MAXLEN) or #k
-      local rgb_hex = v:sub(2)
-      COLOR_MAP[k] = rgb_hex
-      COLOR_TRIE:insert(k)
-      if COLOR_NAME_SETTINGS.lowercase then
-        local lowercase = k:lower()
-        COLOR_MAP[lowercase] = rgb_hex
-        COLOR_TRIE:insert(lowercase)
-      end
+      addPair(k, v:byte(1) == hash and v:sub(2) or v)
     end
   elseif opts == "nvim" then
     for k, v in pairs(api.nvim_get_color_map()) do
       if not (COLOR_NAME_SETTINGS.strip_digits and k:match "%d+$") then
-        COLOR_NAME_MINLEN = COLOR_NAME_MINLEN and min(#k, COLOR_NAME_MINLEN) or #k
-        COLOR_NAME_MAXLEN = COLOR_NAME_MAXLEN and max(#k, COLOR_NAME_MAXLEN) or #k
-        local rgb_hex = tohex(v, 6)
-        COLOR_MAP[k] = rgb_hex
-        COLOR_TRIE:insert(k)
-        if COLOR_NAME_SETTINGS.lowercase then
-          local lowercase = k:lower()
-          COLOR_MAP[lowercase] = rgb_hex
-          COLOR_TRIE:insert(lowercase)
-        end
+        addPair(k, tohex(v, 6))
       end
     end
   elseif opts:match "^tailwind" or opts == true then
@@ -61,11 +57,7 @@ function parser.init(opts)
     -- setup tailwind colors
     for k, v in pairs(tailwind.colors) do
       for _, pre in ipairs(tailwind.prefixes) do
-        local name = pre .. "-" .. k
-        COLOR_NAME_MINLEN = COLOR_NAME_MINLEN and min(#name, COLOR_NAME_MINLEN) or #name
-        COLOR_NAME_MAXLEN = COLOR_NAME_MAXLEN and max(#name, COLOR_NAME_MAXLEN) or #name
-        COLOR_MAP[name] = v
-        COLOR_TRIE:insert(name)
+        addPair(pre .. "-" .. k, v)
       end
     end
   elseif opts then
