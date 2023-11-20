@@ -15,7 +15,7 @@ unsure, [read this excellent guide](https://github.com/termstandard/colors).
 Use your plugin manager or clone directly into your package.
 
 ```lua
-use 'NvChad/nvim-colorizer.lua'
+use 'JosefLitos/colorizer.nvim'
 ```
 
 As long as you have `malloc()` and `free()` on your system, this will work.
@@ -82,28 +82,31 @@ library to do custom highlighting themselves.
 ```lua
   require("colorizer").setup {
       filetypes = { "*" },
-      user_default_options = {
-        RGB = true, -- #RGB hex codes
-        RRGGBB = true, -- #RRGGBB hex codes
-        names = true, -- "Name" codes like Blue or blue
-        RRGGBBAA = false, -- #RRGGBBAA hex codes
-        AARRGGBB = false, -- 0xAARRGGBB hex codes
-        rgb_fn = false, -- CSS rgb() and rgba() functions
-        hsl_fn = false, -- CSS hsl() and hsla() functions
-        css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-        css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
-        -- Available modes for `mode`: foreground, background,  virtualtext
-        mode = "background", -- Set the display mode.
-        -- Available methods are false / true / "normal" / "lsp" / "both"
-        -- True is same as normal
-        tailwind = false, -- Enable tailwind colors
-        -- parsers can contain values used in |user_default_options|
-        sass = { enable = false, parsers = { "css" }, }, -- Enable sass colors
-        virtualtext = "■",
-        -- update color values even if buffer is not focused
-        -- example use: cmp_menu, cmp_docs
-        always_update = false
-      },
+        user_default_options = {
+          RGB = true, -- #RGB hex codes
+          RRGGBB = true, -- #RRGGBB hex codes
+          -- can be a boolean, or:
+          -- table like {Name='#colorhex'},
+          -- function returning such table (for colorscheme-dependant updates),
+          -- "nvim": for all neovim "Name" codes like Blue ...,
+          -- "tailwind" (_lsp/_both): for tailwind/css-like color names
+          names = "nvim",
+          RRGGBBAA = false, -- #RRGGBBAA hex codes
+          AARRGGBB = false, -- 0xAARRGGBB hex codes
+          rgb_fn = false, -- CSS rgb() and rgba() functions
+          hsl_fn = false, -- CSS hsl() and hsla() functions
+          css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+          css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
+          -- Available modes for `mode`: foreground, background,  virtualtext
+          mode = "background", -- Set the display mode.
+          -- Available methods are false / true / "normal" / "lsp" / "both"
+          -- True is same as normal
+          -- parsers can contain values used in |user_default_options|
+          sass = { enable = false, parsers = { css }, }, -- Enable sass colors
+          virtualtext = "■",
+          -- update color values even if buffer is not focused
+          always_update = false
+      }
       -- all the sub-options of filetypes apply to buftypes
       buftypes = {},
   }
@@ -176,7 +179,7 @@ In `user_default_options`, there are 2 types of options
 
 1. Individual options - `names`, `RGB`, `RRGGBB`, `RRGGBBAA`, `hsl_fn`, `rgb_fn` , `RRGGBBAA`, `AARRGGBB`, `tailwind`, `sass`
 
-1. Alias options - `css`, `css_fn` 
+1. Alias options - `css`, `css_fn`
 
 If `css_fn` is true, then `hsl_fn`, `rgb_fn` becomes `true`
 
