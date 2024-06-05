@@ -64,11 +64,11 @@ function utils.byte_is_hex(byte)
   return band(BYTE_CATEGORY[byte], CATEGORY_HEX) ~= 0
 end
 
----Valid colorchars are alphanumeric and - ( tailwind colors )
+---Valid colorchars are alphanumeric and [_-] ( tailwind colors )
 ---@param byte number
 ---@return boolean
 function utils.byte_is_valid_colorchar(byte)
-  return utils.byte_is_alphanumeric(byte) or byte == ("-"):byte()
+  return utils.byte_is_alphanumeric(byte) or byte == 45 or byte == 95 -- '-_' byte values
 end
 
 ---Count the number of character in a string

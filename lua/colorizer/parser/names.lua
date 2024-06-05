@@ -22,6 +22,8 @@ parser.settings = COLOR_NAME_SETTINGS
 ---@type boolean|string|table<string,string>|function
 local CUSTOM_ENABLED = false
 
+local hash = string.byte "#"
+
 function parser.init(opts)
   if opts == nil then
     opts = CUSTOM_ENABLED
@@ -42,7 +44,6 @@ function parser.init(opts)
   end
 
   if type(opts) == "table" or type(opts) == "function" then
-    local hash = string.byte "#"
     for k, v in pairs(type(opts) == "function" and opts() or opts) do
       addPair(k, v:byte(1) == hash and v:sub(2) or v)
     end
