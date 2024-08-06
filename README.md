@@ -15,7 +15,7 @@ unsure, [read this excellent guide](https://github.com/termstandard/colors).
 Use your plugin manager or clone directly into your package.
 
 ```lua
-use 'JosefLitos/colorizer.nvim'
+use 'litoj/colorizer.nvim'
 ```
 
 As long as you have `malloc()` and `free()` on your system, this will work.
